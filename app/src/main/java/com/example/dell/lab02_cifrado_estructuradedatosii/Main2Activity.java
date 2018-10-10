@@ -82,7 +82,6 @@ public class Main2Activity extends AppCompatActivity {
                             encodedText = zigzag.encrypt(txtContent.getText().toString(), level);
                             txtLevel.setText("");
                             txtContent.setText("");
-
                             WriteFile(nameFile, encodedText);
                         }
                     } catch(NumberFormatException nfe) {
@@ -101,15 +100,20 @@ public class Main2Activity extends AppCompatActivity {
 
                     String nameFile = split2[1] + ".des";
                     try {
-                        level = Integer.parseInt(txtLevel.getText().toString());
+                        if(txtLevel.getText().toString() != "")
+                        {
+                            level = Integer.parseInt(txtLevel.getText().toString());
+                            String decodedText = "";
+                            //Decrypt message
+                            decodedText = zigzag.decrypt(txtContent.getText().toString(), level);
+                            txtLevel.setText("");
+                            txtContent.setText(decodedText);
+
+                            WriteFile(nameFile, decodedText);
+                        }
                     } catch(NumberFormatException nfe) {
                         Toast.makeText(this, "Ingresar nivel (número)", Toast.LENGTH_LONG).show();
                     }
-
-                    String decodedText = "";
-                    //Decoded zig zag
-
-                    WriteFile(nameFile, decodedText);
                 }
                 catch (Exception e) {
                  Toast.makeText(this, "Elija un archivo .cif", Toast.LENGTH_LONG).show();
@@ -170,12 +174,12 @@ public class Main2Activity extends AppCompatActivity {
 
 
             try {
-                FileOutputStream fos = new FileOutputStream(f);
-                fos.write(content.getBytes());
-                fos.close();
-                if(txtContent.getText() != "")
-                {
+                if (filename.length() != 0) {
+                    FileOutputStream fos = new FileOutputStream(f);
+                    fos.write(content.getBytes());
+                    fos.close();
                     Toast.makeText(this, "Archivo en: storage/MisCompresiones", Toast.LENGTH_LONG).show();
+
                 }
             } catch (IOException e) {
                 e.printStackTrace();
