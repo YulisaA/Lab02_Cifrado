@@ -48,6 +48,7 @@ public class Main2Activity extends AppCompatActivity {
 
     String filename = "";
     int level = 0;
+    Trasposicion.ZigZag zigzag = new Trasposicion.ZigZag();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,15 +74,20 @@ public class Main2Activity extends AppCompatActivity {
                     String nameFile = split[0] + ".cif";
 
                     try {
-                        level = Integer.parseInt(txtLevel.getText().toString());
+                        if(txtLevel.getText().toString() != "")
+                        {
+                            level = Integer.parseInt(txtLevel.getText().toString());
+                            String encodedText = "";
+                            //Encrypt message
+                            encodedText = zigzag.encrypt(txtContent.getText().toString(), level);
+                            txtLevel.setText("");
+                            txtContent.setText("");
+
+                            WriteFile(nameFile, encodedText);
+                        }
                     } catch(NumberFormatException nfe) {
                         Toast.makeText(this, "Ingresar nivel (número)", Toast.LENGTH_LONG).show();
                     }
-
-                    String encodedText = "";
-                        //Encriptar
-
-                    WriteFile(nameFile, encodedText);
                 }
                 catch (Exception e){
                     Toast.makeText(this, "No se pudo comprimir.", Toast.LENGTH_LONG).show();
