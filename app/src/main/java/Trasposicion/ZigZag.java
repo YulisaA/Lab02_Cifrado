@@ -14,11 +14,7 @@ public class ZigZag {
             sizeOla = caracteres/size;
         }
 
-        for(int i = 0; text.length() < caracteres; i++)
-        {
-            StringBuilder sb = new StringBuilder();
-            encodedText = sb.append("|");
-        }
+
 
         return encodedText;
     }
