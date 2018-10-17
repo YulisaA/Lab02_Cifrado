@@ -1,9 +1,14 @@
-package AlgorithmSDES;
+package SDESAlgorithm;
 
 public class SDES {
+
     static String [] [] SOMatrix = new String [4] [4];
     static String [] [] S1Matrix = new String [4] [4];
 
+    static byte[] Key1 = new byte[8];
+    static byte[] Key2 = new byte[8];
+
+    //SBoxes
     public static void fillSO()
     {
         SOMatrix [0][0] = "01";
@@ -50,8 +55,8 @@ public class SDES {
         S1Matrix [3][3] = "11";
     }
 
-    public static String generateKeys(String key) {
-        byte [] Key = new byte[10];
+    public static void generateKeys(String key) {
+        byte [] Key;
         Key = P10(key.getBytes());
         byte[] P10ResultPart1 = new byte[5];
         byte[] P10ResultPart2 = new byte[5];
@@ -62,8 +67,9 @@ public class SDES {
             P10ResultPart2[i] = Key[5 + i];
         }
 
-        byte[] LS1ResultPart1 = new byte[5];
-        byte[] LS1ResultPart2 = new byte[5];
+        //LS1 5 bytes each one
+        byte[] LS1ResultPart1;
+        byte[] LS1ResultPart2;
 
         LS1ResultPart1 = LS1(P10ResultPart1);
         LS1ResultPart2 = LS1(P10ResultPart2);
@@ -74,12 +80,11 @@ public class SDES {
             resultLS1[i] = LS1ResultPart1[i];
             resultLS1[5+i] = LS1ResultPart2[i];
         }
-
-        byte [] Key1 = new byte[8];
+        //Obtain Key1
         Key1 = P8(resultLS1);
 
-        byte [] LS2ResultPart1 = new byte[5];
-        byte [] LS2ResultPart2 = new byte[5];
+        byte [] LS2ResultPart1;
+        byte [] LS2ResultPart2;
 
         LS2ResultPart1 = LS2(LS1ResultPart1);
         LS2ResultPart2 = LS2(LS1ResultPart2);
@@ -90,10 +95,8 @@ public class SDES {
             resultLS2[i] = LS2ResultPart1[i];
             resultLS2[5+i] = LS2ResultPart2[i];
         }
-        byte [] Key2 = new byte[8];
+        //Obtain Key2
         Key2 = P8(resultLS2);
-
-        return new String(Key1, 0) + "-" + new String(Key2, 0);
     }
 
     public static byte [] P10(byte [] key)
@@ -217,7 +220,7 @@ public class SDES {
     public static byte[] XOR(byte[] array1, byte[] array2)
     {
         byte[] XORresult = new byte[array1.length];
-        byte[] result = new byte[1];
+        byte[] result;
 
         for(int i = 0; i < XORresult.length; i++){
             if(array1[i] == array2[i])
@@ -238,15 +241,20 @@ public class SDES {
     {
         byte[] IPResultPart1 = new byte[4];
         byte[] IPResultPart2 = new byte[4];
+
+        //Initial permutation
         for(int j = 0; j < IPResultPart1.length; j++)
         {
             IPResultPart1[j] = IPResult[j];
             IPResultPart2[j] = IPResult[4+j];
         }
-        byte[] EPresult = new byte[8];
+
+        //Expand and permute
+        byte[] EPresult;
         EPresult = EP(IPResultPart2);
 
-        byte[] XORresult = new byte[8];
+        //XOR: expand and permute and Key1
+        byte[] XORresult;
         XORresult = XOR(EPresult, Key1);
 
         byte[] XORResultPart1 = new byte[4];
@@ -256,6 +264,7 @@ public class SDES {
             XORResultPart1[j] = XORresult[j];
             XORResultPart2[j] = XORresult[4+j];
         }
+        //Obtain position to use SBOXES
         byte[] bit1 = new byte[1];
         byte[] bit2 = new byte[1];
         byte[] bit3 = new byte[1];
@@ -264,11 +273,14 @@ public class SDES {
         bit2[0] = XORResultPart1[1];
         bit3[0] = XORResultPart1[2];
         bit4[0] = XORResultPart1[3];
+        //Obtain row and column
         String binaryrow = new String(bit1,0) + new String(bit4, 0);
         String binarycolumn = new String(bit2,0) + new String(bit3, 0);
 
+        //Convert binary column to decimal to use the boxes
         int row = Integer.parseInt(binaryrow,2);
         int column = Integer.parseInt(binarycolumn,2);
+        //Obtain SO Matrix value
         String S0Result = SOMatrix[row][column];
 
         bit1[0] = XORResultPart2[0];
@@ -280,22 +292,23 @@ public class SDES {
 
         row = Integer.parseInt(binaryrow,2);
         column = Integer.parseInt(binarycolumn,2);
+        //Obtain S1Matrix value
         String S1Result = S1Matrix[row][column];
 
-        byte[] SBResult = new byte[4];
+        byte[] SBResult;
         SBResult = (S0Result + S1Result).getBytes();
 
-        byte[] P4Result = new byte[4];
+        byte[] P4Result;
         P4Result = P4(SBResult);
 
-        byte[] XORResult = new byte[4];
+        byte[] XORResult;
         XORResult = XOR(IPResultPart1, P4Result);
 
-        //SWITCH
-        byte[] EPResult = new byte[8];
+        //S W I T C H, switch values for next operations
+        byte[] EPResult;
         EPResult = EP(XORResult);
 
-        byte [] XORresultKey2 = new byte[8];
+        byte [] XORresultKey2;
         XORresultKey2 = XOR(EPResult, Key2);
 
         byte[] XORPart1 = new byte[4];
@@ -315,6 +328,7 @@ public class SDES {
 
         row = Integer.parseInt(binaryrow,2);
         column = Integer.parseInt(binarycolumn,2);
+        //Obtain SOMatrix value
         String S0Result2 = SOMatrix[row][column];
 
         bit1[0] = XORPart2[0];
@@ -326,6 +340,7 @@ public class SDES {
 
         row = Integer.parseInt(binaryrow,2);
         column = Integer.parseInt(binarycolumn,2);
+        //Obtain S1Matrix value
         String S1Result2 = S1Matrix[row][column];
 
         byte[] SBResult2 = new byte[4];
@@ -339,51 +354,81 @@ public class SDES {
 
         return new String(lastXOR, 0) + "-" + new String(XORResult, 0);
     }
-    public static String encrypt(String key, String text) {
+
+    public static String encrypt(int c) {
         fillSO();
         fillS1();
 
-        String[] Keys = generateKeys(key).split("-");
-        char[] Key1Part = Keys[0].toCharArray();
-        char[] Key2Part = Keys[1].toCharArray();
-        byte[] Key1 = new byte[8];
-        byte[] Key2 = new byte[8];
-        byte[] positionKey1 = new byte[1];
-        byte[] positionKey2 = new byte[1];
-        String actualKey1 = "";
-        String actualKey2 = "";
-        byte[] IPInverse = new byte[4];
-        StringBuilder result = new StringBuilder();
-
-        for(int i = 0; i < Key1.length; i++)
-        {
-            actualKey1 = Key1Part[i] + "";
-            actualKey2 = Key2Part[i] + "";
-            positionKey1 = actualKey1.getBytes();
-            positionKey2 = actualKey2.getBytes();
-            Key1[i] = positionKey1[0];
-            Key2[i] = positionKey2[0];
-        }
-
-        byte[] getASCII = new byte[1];
-        byte[] actualCharacter = new byte[8];
+        byte[] actualCharacter;
         String binary = "";
+        byte[] IPinverse;
+        String result = "";
 
-        for(int i = 0; i < text.length(); i++)
-        {
-            String actual = text.charAt(i) + "";
-            getASCII = actual.getBytes();
-            binary = Integer.toBinaryString(getASCII[0]);
+            binary = Integer.toBinaryString(c);
             while(binary.length() < 8)
             {
                 binary = "0" + binary;
             }
+            //Get bytes to init
             actualCharacter = binary.getBytes();
 
+            byte[] IPResult;
+            IPResult = IP(actualCharacter);
+
+            //Obtain lastXOR and XORResult
+            String[] fk = FK_Function(IPResult, Key1, Key2).split("-");
+            char[] functionPart1 = fk[0].toCharArray();
+            char[] functionPart2 = fk[1].toCharArray();
+            byte[] lastXOR = new byte[4];
+            byte[] XORResult = new byte[4];
+            byte[] position1;
+            byte[] position2;
+            String actualfk1 = "";
+            String actualfk2 = "";
+
+            for(int j = 0; j < lastXOR.length; j++)
+            {
+                actualfk1 = functionPart1[j] + "";
+                actualfk2 = functionPart2[j] + "";
+                position1 = actualfk1.getBytes();
+                position2 = actualfk2.getBytes();
+                lastXOR[j] = position1[0];
+                XORResult[j] = position2[0];
+            }
+
+            //Inverse Permutation
+            IPinverse = IPInverse(lastXOR, XORResult);
+
+            //Obtain ASCII of the actual binary result
+            int ascii = Integer.parseInt(new String(IPinverse, 0),2);
+
+            //Obtain character of the ASCII
+            result = (new String(Character.toChars(ascii)));
+
+        return result;
+    }
+
+    public static String decrypt(int c) {
+        fillSO();
+        fillS1();
+
+        byte[] actualCharacter;
+        String binary = "";
+        byte[] IPinverse;
+        String result = "";
+        //Obtain binary
+        binary = Integer.toBinaryString(c);
+        while(binary.length() < 8)
+        {
+            binary = "0" + binary;
+        }
+            //GetBytes for the actualCharacter
+            actualCharacter = binary.getBytes();
             byte[] IPResult = new byte[8];
             IPResult = IP(actualCharacter);
 
-            String[] fk = FK_Function(IPResult, Key1, Key2).split("-");
+            //Now Key2 is used first
+            String[] fk = FK_Function(IPResult, Key2, Key1).split("-");
             char[] functionPart1 = fk[0].toCharArray();
             char[] functionPart2 = fk[1].toCharArray();
             byte[] lastXOR = new byte[4];
@@ -403,10 +448,14 @@ public class SDES {
                 XORResult[j] = position2[0];
             }
 
-            IPInverse = IPInverse(lastXOR, XORResult);
-            result = result.append(new String(IPInverse, 0));
-        }
+            IPinverse = IPInverse(lastXOR, XORResult);
+            //Obtain ascii of the actual value
+            int ascii = Integer.parseInt(new String(IPinverse, 0),2);
 
-        return result.toString();
+            //Obtain character of the ASCII
+            result = (new String(Character.toChars(ascii)));
+
+        return result;
     }
+
 }
