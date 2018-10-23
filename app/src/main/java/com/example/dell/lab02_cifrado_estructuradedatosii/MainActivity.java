@@ -13,10 +13,10 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.btnZigZag)
     Button btnZigZag;
-    @BindView(R.id.btnZigZag2)
-    Button btnZigZag2;
     @BindView(R.id.btnSDES)
     Button btnSDES;
+    @BindView(R.id.btnRSA)
+    Button btnRSA;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,13 +27,19 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.btnZigZag)
     public void onViewClicked() {
-        Intent intent = new Intent(this, Main2Activity.class);
+        Intent intent = new Intent(this, ActivityZigZag.class);
         startActivity(intent);
     }
 
     @OnClick(R.id.btnSDES)
     public void onViewClickedSDES() {
-        Intent intent = new Intent(this, Main3Activity.class);
+        Intent intent = new Intent(this, ActivitySDES.class);
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.btnRSA)
+    public void onViewClickedRSA() {
+        Intent intent = new Intent(this, ActivityRSAKey.class);
         startActivity(intent);
     }
 }

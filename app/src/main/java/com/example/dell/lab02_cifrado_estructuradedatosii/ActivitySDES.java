@@ -31,7 +31,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class Main3Activity extends AppCompatActivity {
+public class ActivitySDES extends AppCompatActivity {
 
     @BindView(R.id.btnChooseFile)
     ImageButton btnChooseFile;
@@ -58,7 +58,7 @@ public class Main3Activity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main3);
+        setContentView(R.layout.activity_sdes);
         ButterKnife.bind(this);
     }
 
@@ -90,7 +90,7 @@ public class Main3Activity extends AppCompatActivity {
                         }
                 }
                 catch (Exception e){
-                    Toast.makeText(this, "No se pudo comprimir.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "No se pudo encriptar.", Toast.LENGTH_LONG).show();
                 }
                 break;
             case R.id.btnDecrypt:

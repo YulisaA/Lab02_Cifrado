@@ -18,8 +18,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Main2Activity"></activity>
-        <activity android:name=".Main3Activity"></activity>
+        <activity android:name=".ActivityZigZag"></activity>
+        <activity android:name=".ActivitySDES"></activity>
+        <activity android:name=".ActivityRSA"></activity>
+        <activity android:name=".ActivityRSAKey"></activity>
     </application>
 
 </manifest>
