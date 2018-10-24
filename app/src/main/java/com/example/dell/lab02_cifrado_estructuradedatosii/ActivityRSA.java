@@ -95,8 +95,15 @@ public class ActivityRSA extends AppCompatActivity {
 
                     nameFile = split2[1] + ".txt";
                     //Decrypt message
-                    String result = ReadAndWrite(selectedfile);
-                    txtContent.setText(result);
+                    String content = ShowFile(selectedfile);
+                    String[] splitContent = content.split(",");
+                    StringBuilder sb = new StringBuilder();
+                    for(int i = 0; i < splitContent.length; i++)
+                    {
+                        sb.append(rsa.decrypt(Integer.parseInt(splitContent[i]), key));
+                    }
+                    WriteFile(nameFile, sb.toString());
+                    txtContent.setText(sb.toString());
                 } catch (Exception e) {
                     Toast.makeText(this, "Elija un archivo .rsacif", Toast.LENGTH_LONG).show();
                 }
@@ -150,13 +157,8 @@ public class ActivityRSA extends AppCompatActivity {
                     continue;
                 }
                 stringBuilder = stringBuilder.append(String.valueOf((char) c));
-                if (!nameFile.contains(".txt")) {
-                    int result = rsa.encrypt(c, key);
-                     writer.write(result);
-                } else {
-                    String result = rsa.decrypt(c, key);
-                    writer.write(result);
-                }
+                int result = rsa.encrypt(c, key);
+                writer.write(result + ",");
             }
             input.close();
             reader.close();
@@ -214,5 +216,34 @@ public class ActivityRSA extends AppCompatActivity {
         input.close();
         reader.close();
         return stringBuilder.toString();
+    }
+    public void WriteFile(String filename, String content) {
+        if (isExternalStorage() && verifyPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            boolean exist = true;
+            if (exist) {
+                File newFile;
+                newFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "/MisCompresiones");
+                newFile.mkdirs();
+            }
+            File f;
+            f = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/MisCompresiones", filename);
+
+
+            try {
+                if (filename.length() != 0) {
+                    FileOutputStream fos = new FileOutputStream(f);
+                    fos.write(content.getBytes());
+                    fos.close();
+                    Toast.makeText(this, "Archivo en: storage/MisCompresiones", Toast.LENGTH_LONG).show();
+
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+
+            }
+
+        } else {
+            Toast.makeText(this, "Error", Toast.LENGTH_LONG).show();
+        }
     }
 }

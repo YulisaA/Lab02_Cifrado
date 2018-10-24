@@ -37,8 +37,6 @@ public class ActivityRSAKey extends AppCompatActivity {
     EditText txtPValue;
     @BindView(R.id.txtQValue)
     EditText txtQValue;
-    @BindView(R.id.txtLabel)
-    TextView txtLabel;
     RSA rsa = new RSA();
 
     @Override
