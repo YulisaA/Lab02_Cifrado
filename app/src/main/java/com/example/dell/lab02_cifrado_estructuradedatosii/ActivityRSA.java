@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
+import RSAEncrypt.RSA;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -47,6 +48,7 @@ public class ActivityRSA extends AppCompatActivity {
     @BindView(R.id.txtContent)
     TextView txtContent;
     String key = "";
+    RSA rsa = new RSA();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +79,6 @@ public class ActivityRSA extends AppCompatActivity {
                     //Filename with extension .scif
                     String[] split = filename.split("\\.");
                     nameFile = split[0] + ".rsacif";
-
                     //Encrypt message
                     ReadAndWrite(selectedfile);
                     txtContent.setText("");
@@ -94,8 +95,8 @@ public class ActivityRSA extends AppCompatActivity {
 
                     nameFile = split2[1] + ".txt";
                     //Decrypt message
-                    ReadAndWrite(selectedfile);
-                    txtContent.setText("");
+                    String result = ReadAndWrite(selectedfile);
+                    txtContent.setText(result);
                 } catch (Exception e) {
                     Toast.makeText(this, "Elija un archivo .rsacif", Toast.LENGTH_LONG).show();
                 }
@@ -109,17 +110,7 @@ public class ActivityRSA extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 123 && resultCode == RESULT_OK) {
             String name = data.getData().getLastPathSegment();
-            if (name.contains(".rsacif")) {
-                selectedfile = data.getData();
-                filename = selectedfile.getLastPathSegment();
-                try {
-
-                    txtContent.setText(ShowFile(selectedfile));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            else if (name.contains(".key")) {
+            if (name.contains(".key")) {
                 selectedKey = data.getData();
                 try {
                     txtContent.setText(ShowFile(selectedKey));
@@ -128,8 +119,17 @@ public class ActivityRSA extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
+            else {
+                selectedfile = data.getData();
+                filename = selectedfile.getLastPathSegment();
+                try {
 
-            Toast.makeText(this, selectedfile.getPath(), Toast.LENGTH_LONG).show();
+                    txtContent.setText(ShowFile(selectedfile));
+                    Toast.makeText(this, selectedfile.getPath(), Toast.LENGTH_LONG).show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
         }
     }
@@ -147,25 +147,22 @@ public class ActivityRSA extends AppCompatActivity {
             int c;
             while ((c = reader.read()) != -1) {
                 if (String.valueOf((char) c).equals("\uFEFF")) {
-
                     continue;
                 }
                 stringBuilder = stringBuilder.append(String.valueOf((char) c));
                 if (!nameFile.contains(".txt")) {
-                    //String result = rsa.encrypt(c);
-                    // writer.write(result);
+                    int result = rsa.encrypt(c, key);
+                     writer.write(result);
                 } else {
-                    //String result = rsa.decrypt(c);
-                    //writer.write(result);
+                    String result = rsa.decrypt(c, key);
+                    writer.write(result);
                 }
             }
-
             input.close();
             reader.close();
             writer.flush();
             writer.close();
             Toast.makeText(this, "Archivo en: storage/MisCompresiones", Toast.LENGTH_LONG).show();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
