@@ -27,8 +27,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class ActivityRSAKey extends AppCompatActivity {
-
-
     @BindView(R.id.btnEncrypt)
     Button btnEncrypt;
     @BindView(R.id.btnGenerateKeys)
@@ -58,12 +56,15 @@ public class ActivityRSAKey extends AppCompatActivity {
                     try {
                         if(txtPValue.getText().toString() != "" && txtQValue.getText().toString() != "")
                         {
+                            //Name for key files
                             String filePublicKey = "public.key";
                             String filePrivateKey = "private.key";
-                            //Generar llaves
+                            //Generate keys
                             String[] keys = rsa.generateKeys(txtPValue.getText().toString(), txtQValue.getText().toString());
                             txtPValue.setText("");
                             txtQValue.setText("");
+                            //Write keys on files
+                            //keys[0] public key, keys[1] private key
                             WriteFile(filePublicKey, keys[0]);
                             WriteFile(filePrivateKey, keys[1]);
                         }
@@ -93,8 +94,6 @@ public class ActivityRSAKey extends AppCompatActivity {
             }
             File f;
             f = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/MisCompresiones", filename);
-
-
             try {
                 if (filename.length() != 0) {
                     FileOutputStream fos = new FileOutputStream(f);
@@ -105,9 +104,7 @@ public class ActivityRSAKey extends AppCompatActivity {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-
             }
-
         } else {
             Toast.makeText(this, "Error", Toast.LENGTH_LONG).show();
         }

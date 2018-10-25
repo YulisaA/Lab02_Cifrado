@@ -96,18 +96,20 @@ public class ActivityRSA extends AppCompatActivity {
                     nameFile = split2[1] + ".txt";
                     //Decrypt message
                     String content = ShowFile(selectedfile);
+                    //split encrypted text
                     String[] splitContent = content.split(",");
                     StringBuilder sb = new StringBuilder();
                     for(int i = 0; i < splitContent.length; i++)
                     {
+                        //Concatenate result
                         sb.append(rsa.decrypt(Integer.parseInt(splitContent[i]), key));
                     }
+                    //Write result on file .txt
                     WriteFile(nameFile, sb.toString());
                     txtContent.setText(sb.toString());
                 } catch (Exception e) {
                     Toast.makeText(this, "Elija un archivo .rsacif", Toast.LENGTH_LONG).show();
                 }
-
                 break;
         }
     }
@@ -157,7 +159,9 @@ public class ActivityRSA extends AppCompatActivity {
                     continue;
                 }
                 stringBuilder = stringBuilder.append(String.valueOf((char) c));
+                //Encrypt character by character
                 int result = rsa.encrypt(c, key);
+                //Add ',' to know where the encrypted text ends.
                 writer.write(result + ",");
             }
             input.close();
@@ -227,7 +231,6 @@ public class ActivityRSA extends AppCompatActivity {
             }
             File f;
             f = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/MisCompresiones", filename);
-
 
             try {
                 if (filename.length() != 0) {
